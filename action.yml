@@ -1,0 +1,24 @@
+name: setup-nix
+author: Shikanime Studio
+branding:
+  icon: globe
+  color: gray-dark
+description: Setup Nix using Determinate Systems installer and cache
+inputs:
+  github-token:
+    description: GitHub token, used by the Determinate Systems installer
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: composite
+  steps:
+    - uses: DeterminateSystems/nix-installer-action@main
+      with:
+        github-token: ${{ inputs.github-token }}
+    - uses: DeterminateSystems/magic-nix-cache-action@main
+      with:
+        diagnostic-endpoint: ""
+        use-flakehub: false
+    - uses: DeterminateSystems/flake-checker-action@main
+      with:
+        send-statistics: false
