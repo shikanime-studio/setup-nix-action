@@ -16,10 +16,9 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ steps.createGithubAppToken.outputs.token }}
-      - uses: DeterminateSystems/nix-installer-action@v20
+      - uses: shikanime-studio/setup-nix-action@v1
         with:
           github-token: ${{ steps.createGithubAppToken.outputs.token }}
-      - uses: DeterminateSystems/magic-nix-cache-action@v13
       - uses: shikanime-studio/sapling-action@v3
         with:
           token: ${{ steps.createGithubAppToken.outputs.token }}
