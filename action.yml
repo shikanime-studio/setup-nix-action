@@ -5,10 +5,10 @@ branding:
   color: gray-dark
 description: Setup Nix using Determinate Systems installer and cache
 inputs:
-  extra-args:
-    description: Extra arguments to pass to Determinate Systems nix-installer
+  cachix-auth-token:
+    description: Cachix auth token, used by the cachix-action
     required: false
-    default: ""
+    default: ${{ secrets.CACHIX_AUTH_TOKEN }}
   extra-conf:
     description: Additional Nix configuration to append to nix.conf
     required: false
@@ -26,18 +26,12 @@ runs:
   steps:
     - uses: docker/setup-qemu-action@v3
       if: ${{ inputs.extra-platforms != '' }}
-    - uses: DeterminateSystems/nix-installer-action@v20
+    - uses: cachix/install-nix-action@v31
       with:
-        diagnostic-endpoint: ""
-        github-token: ${{ inputs.github-token }}
-        extra-conf: |
+        github_access_token: ${{ inputs.github-token }}
+        extra_nix_config: |
           extra-platforms = ${{ inputs.extra-platforms }}
           ${{ inputs.extra-conf }}
-        extra-args: ${{ inputs.extra-args }}
-    - uses: DeterminateSystems/magic-nix-cache-action@v12
+    - uses: cachix/cachix-action@v15
       with:
-        diagnostic-endpoint: ""
-        use-flakehub: false
-    - uses: DeterminateSystems/flake-checker-action@v12
-      with:
-        send-statistics: false
+        authToken: ${{ inputs.cachix-auth-token }}
