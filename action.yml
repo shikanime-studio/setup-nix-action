@@ -9,6 +9,10 @@ inputs:
     description: Cachix auth token, used by the cachix-action
     required: false
     default: ""
+  cachix-name:
+    description: Cachix name, used by the cachix-action
+    required: false
+    default: ""
   extra-conf:
     description: Additional Nix configuration to append to nix.conf
     required: false
@@ -34,4 +38,5 @@ runs:
           ${{ inputs.extra-conf }}
     - uses: cachix/cachix-action@v15
       with:
+        name: ${{ inputs.cachix-name }}
         authToken: ${{ inputs.cachix-auth-token }}
