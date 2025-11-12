@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ steps.createGithubAppToken.outputs.token }}
-      - uses: shikanime-studio/setup-nix-action@v1
+      - uses: shikanime-studio/setup-nix-action@v2
         with:
           github-token: ${{ steps.createGithubAppToken.outputs.token }}
       - name: Check Nix Flake
