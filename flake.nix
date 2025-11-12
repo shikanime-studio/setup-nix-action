@@ -3,6 +3,7 @@
     devenv.url = "github:cachix/devenv";
     devlib.url = "github:shikanime-studio/devlib";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    git-hooks.url = "github:cachix/git-hooks.nix";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };
@@ -25,54 +26,46 @@
       devenv,
       devlib,
       flake-parts,
+      git-hooks,
       treefmt-nix,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         devenv.flakeModule
+        devlib.flakeModule
+        git-hooks.flakeModule
         treefmt-nix.flakeModule
       ];
       perSystem =
         { pkgs, ... }:
         {
-          treefmt = {
-            projectRootFile = "flake.nix";
-            enableDefaultExcludes = true;
-            programs = {
-              nixfmt.enable = true;
-              prettier.enable = true;
-              shfmt.enable = true;
-              statix.enable = true;
+          devenv.shells.default = {
+            containers = pkgs.lib.mkForce { };
+            languages.nix.enable = true;
+            cachix = {
+              enable = true;
+              push = "shikanime";
             };
-            settings.global.excludes = [
-              "LICENSE"
+            git-hooks.hooks = {
+              actionlint.enable = true;
+              deadnix.enable = true;
+              flake-checker.enable = true;
+            };
+            gitignore = {
+              enable = true;
+              enableDefaultTemplates = true;
+            };
+            packages = [
+              pkgs.gh
+              pkgs.sapling
             ];
-          };
-          devenv = {
-            modules = [
-              devlib.devenvModule
-            ];
-            shells.default = {
-              containers = pkgs.lib.mkForce { };
-              languages.nix.enable = true;
-              cachix = {
-                enable = true;
-                push = "shikanime";
+            treefmt = {
+              enable = true;
+              config = {
+                enableDefaultExcludes = true;
+                programs.prettier.enable = true;
               };
-              git-hooks.hooks = {
-                actionlint.enable = true;
-                deadnix.enable = true;
-                flake-checker.enable = true;
-              };
-              gitignore = {
-                enable = true;
-                enableDefaultTemplates = true;
-              };
-              packages = [
-                pkgs.gh
-                pkgs.sapling
-              ];
             };
           };
         };
