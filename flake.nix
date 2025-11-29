@@ -1,5 +1,6 @@
 {
   inputs = {
+    automata.url = "github:shikanime-studio/automata";
     devenv.url = "github:cachix/devenv";
     devlib.url = "github:shikanime-studio/devlib";
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -37,38 +38,11 @@
         git-hooks.flakeModule
         treefmt-nix.flakeModule
       ];
-      perSystem =
-        { pkgs, ... }:
-        {
-          devenv.shells.default = {
-            containers = pkgs.lib.mkForce { };
-            languages.nix.enable = true;
-            cachix = {
-              enable = true;
-              push = "shikanime";
-            };
-            git-hooks.hooks = {
-              actionlint.enable = true;
-              deadnix.enable = true;
-              flake-checker.enable = true;
-            };
-            gitignore = {
-              enable = true;
-              enableDefaultTemplates = true;
-            };
-            packages = [
-              pkgs.gh
-              pkgs.sapling
-            ];
-            treefmt = {
-              enable = true;
-              config = {
-                enableDefaultExcludes = true;
-                programs.prettier.enable = true;
-              };
-            };
-          };
-        };
+      perSystem = _: {
+        devenv.shells.default.imports = [
+          devlib.devenvModules.shikanime-studio
+        ];
+      };
       systems = [
         "x86_64-linux"
         "x86_64-darwin"
